@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebApplication1
+namespace WebApiWithTcpIpClient
 {
     public class Startup
     {
@@ -28,8 +28,11 @@ namespace WebApplication1
             services.AddControllers();
 
             services.Configure<ThirdSoftwareConfig>(Configuration.GetSection("ThirdSoftware"));
-            services.AddSingleton<IThirdSoftwareTcpClient, ThirdSoftwareTcpClient>();
+            services.AddTransient<SomeRepository>();
+            services.AddTransient<IThirdSoftwareTcpClient, ThirdSoftwareTcpClient>();
             services.AddTransient<IThirdSoftwareService, ThirdSoftwareService>();
+
+            services.AddHostedService<TaskRunnerBackgroundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

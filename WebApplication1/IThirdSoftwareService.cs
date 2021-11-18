@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 
-namespace WebApplication1
+namespace WebApiWithTcpIpClient
 {
     public interface IThirdSoftwareService
     {
-        Task<string> GreetService();
+        Task<string> SendData(byte[] data);
     }
 }

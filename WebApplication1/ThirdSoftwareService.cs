@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebApplication1
+namespace WebApiWithTcpIpClient
 {
     public class ThirdSoftwareService : IThirdSoftwareService, IDisposable
     {
@@ -14,12 +14,10 @@ namespace WebApplication1
             this._client = client;
         }
 
-        public async Task<string> GreetService()
+        public async Task<string> SendData(byte[] data)
         {
             await _client.ConnectAsync();
 
-            var message = "Hello";
-            var data = System.Text.Encoding.UTF8.GetBytes(message);
             await _client.SendAsync(data);
 
             var response = await _client.ReceiveAsync();

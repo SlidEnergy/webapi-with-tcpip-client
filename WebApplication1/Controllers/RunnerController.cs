@@ -3,9 +3,10 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace WebApplication1.Controllers
+namespace WebApiWithTcpIpClient.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -24,9 +25,9 @@ namespace WebApplication1.Controllers
         [HttpPost("task1")]
         public async Task<IActionResult> RunTask1()
         {
-            var response = await _thirdSoftwareService.GreetService();
+            //var response = await _thirdSoftwareService.SendData(Encoding.UTF8.GetBytes("Hello"));
 
-            return Ok(response);
+            return Ok();
         }
     }
 }

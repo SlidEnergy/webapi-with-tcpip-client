@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace WebApplication1
+namespace WebApiWithTcpIpClient
 {
     public class ThirdSoftwareTcpClient : IThirdSoftwareTcpClient, IDisposable
     {

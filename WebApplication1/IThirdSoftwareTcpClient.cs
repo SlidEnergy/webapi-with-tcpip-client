@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace WebApplication1
+namespace WebApiWithTcpIpClient
 {
     public interface IThirdSoftwareTcpClient: IDisposable
     {

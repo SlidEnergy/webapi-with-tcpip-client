@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 
 namespace WebApiWithTcpIpClient
 {
-    public class ThirdSoftwareConfig
+    public class ItemModel
     {
-        public string Server { get; set; }
-        public int Port { get; set; }
+        public byte[] Data { get; set; }
+
+        public byte[] Serialize()
+        {
+            return Data;
+        }
     }
 }
