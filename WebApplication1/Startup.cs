@@ -29,10 +29,11 @@ namespace WebApiWithTcpIpClient
 
             services.Configure<ThirdSoftwareConfig>(Configuration.GetSection("ThirdSoftware"));
             services.AddTransient<SomeRepository>();
-            services.AddTransient<IThirdSoftwareTcpClient, ThirdSoftwareTcpClient>();
-            services.AddTransient<IThirdSoftwareService, ThirdSoftwareService>();
+            services.AddSingleton<IThirdSoftwareClient, ThirdSoftwareClient>();
+            services.AddTransient<MessageReciever>();
 
-            services.AddHostedService<TaskRunnerBackgroundService>();
+            services.AddHostedService<MessageRecieverBackgroundService>();
+            services.AddHostedService<DataSenderBackgroundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

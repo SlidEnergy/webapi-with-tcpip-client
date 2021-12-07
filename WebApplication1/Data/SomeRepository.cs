@@ -10,7 +10,7 @@ namespace WebApiWithTcpIpClient
     {
         public ItemModel GetData()
         {
-            return new ItemModel() { Data = Encoding.UTF8.GetBytes("Hello") };
+            return new ItemModel() { Data = Encoding.UTF8.GetBytes("Hello " + Guid.NewGuid().ToString()) };
         }
     }
 }

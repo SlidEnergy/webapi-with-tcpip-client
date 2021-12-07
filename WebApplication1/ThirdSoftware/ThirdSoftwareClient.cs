@@ -4,38 +4,47 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WebApiWithTcpIpClient
 {
-    public class ThirdSoftwareTcpClient : IThirdSoftwareTcpClient, IDisposable
+    public class ThirdSoftwareClient : IThirdSoftwareClient, IDisposable
     {
         private TcpClient _tcpClient;
         private readonly IOptions<ThirdSoftwareConfig> _config;
 
-        public ThirdSoftwareTcpClient(IOptions<ThirdSoftwareConfig> config)
+        public ThirdSoftwareClient(IOptions<ThirdSoftwareConfig> config)
         {
             _tcpClient = new TcpClient();
             _config = config;
         }
 
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(CancellationToken cancellationToken)
         {
             var config = _config.Value;
 
             if (string.IsNullOrEmpty(config.Server) || config.Port == 0)
                 throw new Exception("Third software server or port not defined");
 
-            await _tcpClient.ConnectAsync(config.Server, config.Port);
+            await _tcpClient.ConnectAsync(config.Server, config.Port, cancellationToken);
         }
 
-        public async Task SendAsync(byte[] data)
+        public Task EnsureConnectedAsync(CancellationToken cancellationToken)
+        {
+            if (_tcpClient.Connected)
+                return Task.CompletedTask;
+
+            return ConnectAsync(cancellationToken);
+        }
+
+        public async Task SendAsync(byte[] data, CancellationToken cancellationToken)
         {
             var networkStream = _tcpClient.GetStream();
-            await networkStream.WriteAsync(data, 0, data.Length);
+            await networkStream.WriteAsync(data, 0, data.Length, cancellationToken);
         }
 
-        public async Task<byte[]> ReceiveAsync()
+        public async Task<byte[]> ReceiveAsync(CancellationToken cancellationToken)
         {
             using var memoryStream = new MemoryStream();
 
@@ -44,8 +53,8 @@ namespace WebApiWithTcpIpClient
 
             do
             {
-                int bytes = await networkStream.ReadAsync(data, 0, data.Length);
-                await memoryStream.WriteAsync(data, 0, bytes);
+                int bytes = await networkStream.ReadAsync(data, 0, data.Length, cancellationToken);
+                await memoryStream.WriteAsync(data, 0, bytes, cancellationToken);
             }
             while (networkStream.DataAvailable);
 

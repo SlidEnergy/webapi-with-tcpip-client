@@ -9,31 +9,42 @@ using System.Threading.Tasks;
 
 namespace WebApiWithTcpIpClient
 {
-    public class TaskRunnerBackgroundService : IHostedService
+    /// <summary>
+    /// Invoke ExecuteAsync at specified intervals.
+    /// </summary>
+    public abstract class TimedBackgroundService : IHostedService
     {
         private int executionCount = 0;
-        private readonly ILogger<TaskRunnerBackgroundService> _logger;
+        private readonly ILogger<DataSenderBackgroundService> _logger;
         private Timer _timer = null!;
         private Task _executingTask;
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
-        public IServiceProvider Services { get; }
 
-        public TaskRunnerBackgroundService(ILogger<TaskRunnerBackgroundService> logger, IServiceProvider services)
+        /// <summary>
+        /// The time interval between invocations in miliseconds
+        /// </summary>
+        public int Period { get; set; } = 1000;
+
+        /// <summary>
+        /// The amount of time to delay before the callback is invoked.
+        /// </summary>
+        public int DueTime { get; set; } = 0;
+
+        public TimedBackgroundService(ILogger<DataSenderBackgroundService> logger)
         {
             _logger = logger;
-            Services = services;
         }
 
-        public Task StartAsync(CancellationToken stoppingToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Timed Hosted Service running.");
 
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(30));
+            _timer = new Timer(Execute, null, TimeSpan.FromMilliseconds(DueTime), TimeSpan.FromMilliseconds(Period));
 
             return Task.CompletedTask;
         }
 
-        private void DoWork(object? state)
+        private void Execute(object state)
         {
             try
             {
@@ -44,7 +55,9 @@ namespace WebApiWithTcpIpClient
 
                 _timer?.Change(Timeout.Infinite, 0);
 
-                _executingTask = DoWorkAsync(_stoppingCts.Token);
+                _executingTask = ExecuteAsync(_stoppingCts.Token);
+
+                _executingTask.ContinueWith(task => _timer.Change(TimeSpan.FromSeconds(Period), TimeSpan.FromMilliseconds(Timeout.Infinite)));
             }
             catch(Exception ex)
             {
@@ -53,20 +66,7 @@ namespace WebApiWithTcpIpClient
             }
         }
 
-        private async Task DoWorkAsync(CancellationToken cancellationToken)
-        {
-            using (var scope = Services.CreateScope())
-            {
-                var thirdSoftwareService = scope.ServiceProvider.GetRequiredService<IThirdSoftwareService>();
-                var someRepository = scope.ServiceProvider.GetRequiredService<SomeRepository>();
-
-                var data = someRepository.GetData();
-
-                var response = await thirdSoftwareService.SendData(data.Serialize());
-            }
-
-            _timer.Change(TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(-1));
-        }
+        public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
