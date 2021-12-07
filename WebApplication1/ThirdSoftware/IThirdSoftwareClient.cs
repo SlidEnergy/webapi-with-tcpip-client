@@ -6,9 +6,9 @@ namespace WebApiWithTcpIpClient
 {
     public interface IThirdSoftwareClient: IDisposable
     {
-        Task ConnectAsync(CancellationToken cancellationToken);
-        Task EnsureConnectedAsync(CancellationToken cancellationToken);
-        Task<byte[]> ReceiveAsync(CancellationToken cancellationToken);
-        Task SendAsync(byte[] data, CancellationToken cancellationToken);
+        Task ConnectAsync(CancellationToken cancellationToken = default);
+        Task EnsureConnectedAsync(CancellationToken cancellationToken = default);
+        Task<byte[]> ReceiveAsync(CancellationToken cancellationToken = default);
+        Task SendAsync(byte[] data, CancellationToken cancellationToken = default);
     }
 }

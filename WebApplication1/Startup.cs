@@ -30,7 +30,7 @@ namespace WebApiWithTcpIpClient
             services.Configure<ThirdSoftwareConfig>(Configuration.GetSection("ThirdSoftware"));
             services.AddTransient<SomeRepository>();
             services.AddSingleton<IThirdSoftwareClient, ThirdSoftwareClient>();
-            services.AddTransient<MessageReciever>();
+            services.AddTransient<MessageReceived>();
 
             services.AddHostedService<MessageRecieverBackgroundService>();
             services.AddHostedService<DataSenderBackgroundService>();

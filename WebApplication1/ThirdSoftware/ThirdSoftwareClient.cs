@@ -20,7 +20,7 @@ namespace WebApiWithTcpIpClient
             _config = config;
         }
 
-        public async Task ConnectAsync(CancellationToken cancellationToken)
+        public async Task ConnectAsync(CancellationToken cancellationToken = default)
         {
             var config = _config.Value;
 
@@ -30,7 +30,7 @@ namespace WebApiWithTcpIpClient
             await _tcpClient.ConnectAsync(config.Server, config.Port, cancellationToken);
         }
 
-        public Task EnsureConnectedAsync(CancellationToken cancellationToken)
+        public Task EnsureConnectedAsync(CancellationToken cancellationToken = default)
         {
             if (_tcpClient.Connected)
                 return Task.CompletedTask;
@@ -38,13 +38,13 @@ namespace WebApiWithTcpIpClient
             return ConnectAsync(cancellationToken);
         }
 
-        public async Task SendAsync(byte[] data, CancellationToken cancellationToken)
+        public async Task SendAsync(byte[] data, CancellationToken cancellationToken = default)
         {
             var networkStream = _tcpClient.GetStream();
             await networkStream.WriteAsync(data, 0, data.Length, cancellationToken);
         }
 
-        public async Task<byte[]> ReceiveAsync(CancellationToken cancellationToken)
+        public async Task<byte[]> ReceiveAsync(CancellationToken cancellationToken = default)
         {
             using var memoryStream = new MemoryStream();
 

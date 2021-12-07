@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace WebApiWithTcpIpClient
 {
-    public class MessageReciever : IDisposable
+    public class MessageReceived : IDisposable
     {
         private readonly IThirdSoftwareClient _client;
-        private readonly ILogger<MessageReciever> _logger;
+        private readonly ILogger<MessageReceived> _logger;
 
         public event Action<string> RecieveMessage;
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
 
-        public MessageReciever(IThirdSoftwareClient client, ILogger<MessageReciever> logger)
+        public MessageReceived(IThirdSoftwareClient client, ILogger<MessageReceived> logger)
         {
             this._client = client;
             _logger = logger;
@@ -47,7 +47,7 @@ namespace WebApiWithTcpIpClient
                 var response = await _client.ReceiveAsync(cancellationToken);
                 var responseMessage = System.Text.Encoding.UTF8.GetString(response);
 
-                _logger.LogInformation("Thrown exception " + responseMessage);
+                _logger.LogInformation("Receive message: " + responseMessage);
 
                 RecieveMessage?.Invoke(responseMessage);
             }
